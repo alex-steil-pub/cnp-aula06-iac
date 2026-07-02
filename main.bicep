@@ -9,6 +9,7 @@ param projectName string = 'lab03'
 param environment string = 'dev'
 
 var namePrefix = '${projectName}-${environment}-weu'
+
 @description('Centro de custo para faturacao')
 param costCenter string = 'IT-Infrastructure'
 
@@ -19,15 +20,17 @@ param ownerEmail string = 'alex.steil-pub@my.istec.pt'
 param createdDate string = utcNow('yyyy-MM-dd')
 
 var commonTags = {
-Environment: environment
-Project: projectName
-CostCenter: costCenter
-Owner: ownerEmail
-ManagedBy: 'Bicep'
-CreatedDate: createdDate
+  Environment: environment
+  Project: projectName
+  CostCenter: costCenter
+  Owner: ownerEmail
+  ManagedBy: 'Bicep'
+  CreatedDate: createdDate
+}
+
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
   name: 'nsg-${namePrefix}'
-  location: location´
+  location: location
   tags: commonTags
   properties: {
     securityRules: [
