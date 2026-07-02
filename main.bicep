@@ -9,10 +9,26 @@ param projectName string = 'lab03'
 param environment string = 'dev'
 
 var namePrefix = '${projectName}-${environment}-weu'
+@description('Centro de custo para faturacao')
+param costCenter string = 'IT-Infrastructure'
 
+@description('Email do proprietario do recurso')
+param ownerEmail string = 'alex.steil-pub@my.istec.pt'
+
+@description('Data de criacao (gerada automaticamente no deploy)')
+param createdDate string = utcNow('yyyy-MM-dd')
+
+var commonTags = {
+Environment: environment
+Project: projectName
+CostCenter: costCenter
+Owner: ownerEmail
+ManagedBy: 'Bicep'
+CreatedDate: createdDate
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
   name: 'nsg-${namePrefix}'
-  location: location
+  location: location´
+  tags: commonTags
   properties: {
     securityRules: [
       {
@@ -35,6 +51,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
 resource vnet 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   name: 'vnet-${namePrefix}'
   location: location
+  tags: commonTags
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -68,6 +85,7 @@ param sshPublicKey string
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-05-01' = {
   name: 'pip-${namePrefix}-001'
   location: location
+  tags: commonTags
   sku: { name: 'Standard' }
   properties: {
     publicIPAllocationMethod: 'Static'
@@ -77,6 +95,7 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-05-01' = {
 resource nic 'Microsoft.Network/networkInterfaces@2023-05-01' = {
   name: 'nic-${namePrefix}-001'
   location: location
+  tags: commonTags
   properties: {
     ipConfigurations: [
       {
@@ -94,6 +113,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2023-05-01' = {
 resource dataDisk 'Microsoft.Compute/disks@2023-04-02' = {
   name: 'disk-${namePrefix}-data-001'
   location: location
+  tags: commonTags
   sku: { name: 'Standard_LRS' }
   properties: {
     creationData: { createOption: 'Empty' }
@@ -104,6 +124,7 @@ resource dataDisk 'Microsoft.Compute/disks@2023-04-02' = {
 resource vm 'Microsoft.Compute/virtualMachines@2023-09-01' = {
   name: 'vm-${namePrefix}-web-001'
   location: location
+  tags: commonTags
   properties: {
     hardwareProfile: {
       vmSize: vmSize
